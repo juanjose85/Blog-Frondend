@@ -13,7 +13,7 @@ const style = {
   p: 4,
 };
 
-const NewEntryForm = ({ isOpen, onRequestClose, onSubmit, onCancel }) => {
+const NewEntryForm = ({ isOpen, onSubmit, onCancel }) => {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [content, setContent] = useState('');
@@ -31,14 +31,11 @@ const NewEntryForm = ({ isOpen, onRequestClose, onSubmit, onCancel }) => {
     setTitle('');
     setAuthor('');
     setContent('');
-
-    onRequestClose();
   };
 
   return (
     <Modal
       isOpen={isOpen}
-      onRequestClose={onRequestClose}
     >
       <Box sx={style}>
         <h2 className="text-2xl font-bold mb-4">Nueva Entrada</h2>

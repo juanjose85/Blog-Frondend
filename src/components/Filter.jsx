@@ -32,7 +32,7 @@ const Filter = ({ onFilter }) => {
         <Grid item xs={4}>
           <input type="text" placeholder="ingresa un valor" value={value} onChange={e => setValue(e.target.value)} />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={2}>
           <Button onClick={handleFilter} variant="outlined">Filtrar</Button>
         </Grid>
       </Grid>

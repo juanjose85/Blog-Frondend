@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Card, CardContent, Typography, Divider } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import IconButton from '@mui/material/IconButton';
+import { Container, Card, CardContent, Typography, Button, AppBar, Toolbar, Box, Grid } from '@mui/material';
 
 import Filter from '../components/Filter';
 import NewEntryForm from '../components/NewEntryForm';
 import api from '../services/api'
 import moment from 'moment';
+import CustomAlert from '../components/CustomAlert';
 
 const Home = () => {
     const [entries, setEntries] = useState([]);
-    const [filteredEntries, setFilteredEntries] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const [showAlertSuccess, setShowAlertSuccess] = useState(false)
+    const [showAlertError, setShowAlertError] = useState(false)
+    const [msgAlert, setMsgAlert] = useState("")
 
     useEffect(() => {
         fetchEntries();
@@ -19,6 +21,7 @@ const Home = () => {
 
     const fetchEntries = async () => {
         try {
+            setEntries([])
             const response = await api.get('/blog');
             setEntries(response.data);
         } catch (error) {
@@ -28,12 +31,18 @@ const Home = () => {
 
     const handleFilter = async ({ filterBy, value }) => {
         try {
+            if(!value){
+                setMsgAlert("Se debe ingresar un valor de filtro");
+                setShowAlertError(true);
+                return
+            }
             const response = await api.get(`/blog/search-by-${filterBy}/${value}`);
-            setFilteredEntries(response.data);
+            setEntries(response.data);
+            setMsgAlert("Nueva entrada guardada con exito."),
+            setShowAlertSuccess(true);
         } catch (error) {
             console.error('Error fetching entries:', error);
         }
-
     };
 
     const newEntries = async ({ title, author, content }) => {
@@ -57,68 +66,96 @@ const Home = () => {
                 const response = await api.post('/blog', entry);
 
                 // Verificar si la solicitud fue exitosa (código de estado 200)
-                if (response.status === 200) {
+                if (response.status === 201) {
+                    setMsgAlert("Nueva entrada guardada con exito.")
+                    setShowAlertSuccess(true)
                     fetchEntries();
                 } else {
-                    alert('Hubo un problema al crear la entrada.');
+                    setMsgAlert('Hubo un problema al crear la entrada.')
+                    setShowAlertError(true)
                 }
+                setIsModalOpen(false);
             } catch (error) {
                 console.error('Error al realizar la solicitud:', error);
                 alert('Hubo un problema al conectar con el servidor.');
+                setIsModalOpen(true);
             }
         } catch (error) {
             console.error('Error fetching entries:', error);
         }
     };
 
-    const handleNewEntry = (newEntry) => {
-        setEntries([...entries, newEntry]);
-        setIsModalOpen(false);
-    };
+    const onCloseAlert = () => {
+        setShowAlertError(false)
+        setShowAlertSuccess(false)
+    }
 
     return (
-        <div>
-            <Container maxWidth="xl">
-                <div>
-                    <div style={{display:"flex"}}>
-                        <Typography variant="h1" gutterBottom>Mi blog</Typography>
-                        <IconButton
-                            onClick={() =>
-                                setIsModalOpen(true)}
-                            color="secondary"
-                            style={{right:10}}
+        <Box sx={{ display: 'flex' }}>
+            <AppBar position="absolute" style={{
+                backgroundColor: "rgba(16, 20, 24, 0.8)"
+            }}>
+                <Container maxWidth="xl">
+                    <Toolbar disableGutters>
+                        <Typography
+                            variant="h6"
+                            noWrap
+                            component="a"
+                            href="#app-bar-with-responsive-menu"
+                            sx={{
+                                mr: 2,
+                                display: { xs: 'none', md: 'flex' },
+                                fontFamily: 'monospace',
+                                fontWeight: 700,
+                                letterSpacing: '.3rem',
+                                color: 'inherit',
+                                textDecoration: 'none',
+                            }}
                         >
-                            <AddIcon fontSize="large" />
-                        </IconButton>
-                    </div>
-                    <Typography variant="h6" gutterBottom>Aqui puedes crear: artículos, opiniones, noticias, tutoriales, historias personales y cualquier otro tipo de contenido que desees compartir.</Typography>
-                    <Divider light />
-                    <Filter onFilter={handleFilter} />
-
-                    {(filteredEntries.length > 0 ? filteredEntries : entries).map(entry => (
-                        <Card key={entry.id} variant="outlined" style={{ marginBottom: '16px' }}>
-                            <CardContent>
-                                <Typography variant="h5" component="div">
-                                    {entry.title}
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    {entry.content.substring(0, 70)}
-                                </Typography>
-                                <a href={`/entries/${entry.id}`}>Leer más</a>
-                            </CardContent>
-                        </Card>
+                            Mi blog
+                        </Typography>
+                        <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+                            <Button
+                                variant="outlined"
+                                key="newBtn"
+                                onClick={() => setIsModalOpen(true)}
+                            >
+                                New
+                            </Button>
+                        </Box>
+                        <Filter onFilter={handleFilter} style={{ position: "flex", right: "0px" }} />
+                    </Toolbar>
+                </Container>
+            </AppBar>
+            <Box component="main" sx={{ p: 10 }}>
+                <CustomAlert open= {showAlertSuccess} type="success" message= {msgAlert} onClose={onCloseAlert}></CustomAlert>
+                <CustomAlert open= {showAlertError} type="error" message= {msgAlert} onClose={onCloseAlert}></CustomAlert>
+                <Grid container spacing={2}>
+                    {entries.map(entry => (
+                        <Grid item xs={6}>
+                            <Card key={entry.id} variant="outlined" style={{ marginBottom: '16px', width: "25em" }}>
+                                <CardContent>
+                                    <Typography variant="h5" component="div">
+                                        {entry.title}
+                                    </Typography>
+                                    <Typography variant="body2" color="text.secondary">
+                                        {entry.content.substring(0, 70)}
+                                    </Typography>
+                                    <a href={`/entries/${entry.id}`}>Leer más</a>
+                                </CardContent>
+                            </Card>
+                        </Grid>
                     ))}
-                </div>
+                </Grid>
                 <div>
                     <NewEntryForm
                         isOpen={isModalOpen}
-                        onRequestClose={handleNewEntry}
                         onSubmit={newEntries}
                         onCancel={() => setIsModalOpen(false)}
                     ></NewEntryForm>
                 </div>
-            </Container>
-        </div>
+            </Box>
+        </Box>
     );
 };
 

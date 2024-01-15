@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Container, Card, CardContent, Typography } from '@mui/material';
+import { Box, Card, CardContent, Typography, AppBar, Container } from '@mui/material';
 import moment from 'moment';
 
 import { useNavigate } from 'react-router-dom';
@@ -45,23 +45,49 @@ const EntryDetail = () => {
   };
 
   return (
-    <Container maxWidth="xl">
-      <IconButton onClick={redirectToHome} color="secondary">
-        <HomeIcon fontSize="large" />
-      </IconButton>
-      <Card variant="outlined" style={{ marginTop: '16px' }}>
-        <CardContent>
-          <Typography variant="h4" component="div">
-            {entry.title}
+    <Box sx={{ display: 'flex' }}>
+      <AppBar position="absolute" style={{
+        backgroundColor: "rgba(16, 20, 24, 0.8)"
+      }}>
+        <Container>
+          <Typography
+            variant="h6"
+            noWrap
+            component="a"
+            href="#app-bar-with-responsive-menu"
+            sx={{
+              mr: 2,
+              display: { xs: 'none', md: 'flex' },
+              fontFamily: 'monospace',
+              fontWeight: 700,
+              letterSpacing: '.3rem',
+              color: 'inherit',
+              textDecoration: 'none',
+            }}
+          >
+            Mi blog
           </Typography>
-          <Typography variant="body1">{entry.content}</Typography>
-          <Typography variant="body2">Autor: {entry.author}</Typography>
-          <Typography variant="body2">
-            Fecha de Publicación: { moment(new Date(entry.publicationDate)).format("DD/MM/YYYY") }
-          </Typography>
-        </CardContent>
-      </Card>
-    </Container>
+          <IconButton onClick={redirectToHome} color="secondary">
+            <HomeIcon fontSize="large" />
+          </IconButton>
+        </Container>
+      </AppBar>
+      <Box component="main" sx={{ p: 10 }}>
+        <Card variant="outlined" style={{ marginTop: '16px' }}>
+          <CardContent>
+            <Typography variant="h4" component="div">
+              {entry.title}
+            </Typography>
+            <Typography variant="body1">{entry.content}</Typography>
+            <Typography variant="body2">
+              Autor: {entry.author}</Typography>
+            <Typography variant="body2">
+              Fecha de Publicación: {moment(new Date(entry.publicationDate)).format("DD/MM/YYYY")}
+            </Typography>
+          </CardContent>
+        </Card>
+      </Box>
+    </Box>
   );
 };
 
