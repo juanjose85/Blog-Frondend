@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Box, Card, CardContent, Typography, AppBar, Container } from '@mui/material';
+import { Box, Card, CardContent, Typography, AppBar, Container, Toolbar } from '@mui/material';
 import moment from 'moment';
 
 import { useNavigate } from 'react-router-dom';
@@ -49,27 +49,29 @@ const EntryDetail = () => {
       <AppBar position="absolute" style={{
         backgroundColor: "rgba(16, 20, 24, 0.8)"
       }}>
-        <Container>
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            Mi blog
-          </Typography>
-          <IconButton onClick={redirectToHome} color="secondary">
-            <HomeIcon fontSize="large" />
-          </IconButton>
+        <Container maxWidth="xl">
+          <Toolbar disableGutters>
+            <Typography
+              variant="h6"
+              noWrap
+              component="a"
+              href="#app-bar-with-responsive-menu"
+              sx={{
+                mr: 2,
+                display: { xs: 'none', md: 'flex' },
+                fontFamily: 'monospace',
+                fontWeight: 700,
+                letterSpacing: '.3rem',
+                color: 'inherit',
+                textDecoration: 'none',
+              }}
+            >
+              Mi blog
+            </Typography>
+            <IconButton onClick={redirectToHome} color="secondary">
+              <HomeIcon fontSize="large" />
+            </IconButton>
+          </Toolbar>
         </Container>
       </AppBar>
       <Box component="main" sx={{ p: 10 }}>
